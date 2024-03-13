@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+pandas
+opencv-python
+Jinja2==3.0.3
+fastapi-sqlalchemy
+python-dotenv
+flask
+pillow
+tensorflow
+python-multipart
+numpy
+keras
+nibabel
