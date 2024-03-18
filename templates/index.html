@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Cifar - 10</title>
+    <title>DocWeb</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -93,13 +93,10 @@
 
     <form id="formContainer" action="/upload" method="POST" enctype="multipart/form-data">
         <div class="form-group">
-            <label for="ctscan">Cifar Image (Drag and drop here)</label>
-            <!-- <div class="image-preview" id="imagePreview">
-                 <img src="" alt="Image Preview"> 
-            </div> -->
+            <label for="ctscan">Upload CT Scan (Drag and drop here)</label>
             <input type="file" class="form-control-file" id="xray" name="scan" >
-          </div>
-          <button type="submit" class="btn btn-primary" onclick="submitForm()">Submit</button>
+        </div>
+        <button type="submit" class="btn btn-primary" onclick="submitForm()">Submit</button>
     </form>
 
     <div id="imageContainer">
@@ -107,7 +104,7 @@
             <h2>{{ message }}</h2>
         {% endif %}
         {% if Pred %}
-            <p>Prediction: It's a {{ Pred }}</p>
+            <p>This model is {{ Pred }} percent confident that CT scan is Abnormal</p>
         {% endif %}
         {% if error %}
             <p> {{ error }}</p>
@@ -134,18 +131,8 @@
         removeTable();
         }
 
-        // function previewImage(event) {
-        // var reader = new FileReader();
-        // var imagePreview = document.getElementById("imagePreview");
-        // var image = imagePreview.querySelector("img");
-
-        // reader.onload = function () {
-        // image.src = reader.result;
-        // };
-
-        // reader.readAsDataURL(event.target.files[0]);
-        // }
-</script>
+        
+    </script>
 
 </body>
 </html>
