@@ -2,12 +2,25 @@ import uvicorn
 from fastapi import FastAPI, UploadFile, File, Request,Form
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 import io
 from PIL import Image
 import os
 import shutil
+import psycopg2
+from fastapi.responses import RedirectResponse
+from dotenv import load_dotenv
 from model import test_pnemonia
+
+load_dotenv('.env')
+
+conn = psycopg2.connect(
+    dbname=os.getenv("POSTGRES_DB"),
+    user=os.getenv("POSTGRES_USER"),
+    password=os.getenv("POSTGRES_PASSWORD"),
+    host="postgres",
+    port=os.getenv("DATABASE_PORT")
+)
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory = "static"), name = "static")
@@ -20,6 +33,50 @@ templates = Jinja2Templates(directory="templates")
 
 @app.get("/")
 def read_root(request: Request):
+    return templates.TemplateResponse("home.html", {"request": request})
+
+@app.get("/sign")
+def signup(request: Request):
+    return templates.TemplateResponse("signup.html", {"request": request})
+
+@app.post("/sign")
+async def signup(
+    request: Request, username: str = Form(...), email: str = Form(...),password1: str = Form(...),password2:str = Form(...) 
+):
+   
+    cur = conn.cursor()
+    cur.execute("INSERT INTO users(Username,Email,Password_) VALUES (%s, %s,%s)", (username,email,password1))
+    conn.commit()
+    cur.close() 
+ 
+    return RedirectResponse("/login", status_code=303)
+
+@app.get("/login")
+def login(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
+@app.post("/login")
+async def do_login(
+    request: Request,
+    username: str = Form(...),
+    password: str = Form(...),
+):
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM users WHERE Username=%s and Password_=%s", (username,password))
+    existing_user = cur.fetchone()
+    cur.close()
+    
+    if existing_user:
+        print(existing_user)
+        return RedirectResponse("/upload", status_code=303)
+    
+    else:
+        return JSONResponse(status_code=401, content={"message": "Wrong credentials"})
+
+   
+
+@app.get("/upload")
+def index_page(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 @app.post("/upload")
